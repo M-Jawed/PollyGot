@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import parrot from './assets/parrot.png'
@@ -7,6 +7,35 @@ import './App.css'
 
 function App() {
   const [count, setCount] = useState(0)
+
+
+  useEffect(() => {
+
+    async function fetchData() {
+      const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": "Bearer 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",
+          "HTTP-Referer": "http://localhost:5173/", // Optional. Site URL for rankings on openrouter.ai.
+          "X-Title": "<YOUR_SITE_NAME>", // Optional. Site title for rankings on openrouter.ai.
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          "model": "deepseek/deepseek-r1:free",
+          "messages": [
+            {
+              "role": "user",
+              "content": "What is the meaning of life?"
+            }
+          ]
+        })
+      });
+    const data = await res.json()
+    console.log(data.choices[0].message.content)
+    }
+
+    fetchData()
+  }, [])
 
   return (
     <>
