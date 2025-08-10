@@ -7,11 +7,12 @@ import './App.css'
 
 function App() {
   const [userData, setUserData] = useState({
-    content: null,
-    language: null,
+    content: '',
+    language: '',
   })
   const [aiOutput, setAiOutput] = useState()
   const [loading, setLoading] = useState(false)
+  const apiKey = import.meta.env.VITE_AI_API
 
   function handleTextareValue(e){
     setUserData(prev => {
@@ -35,7 +36,7 @@ function App() {
           const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
         method: "POST",
         headers: {
-          "Authorization": "Bearer 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",
+          "Authorization": `Bearer ${apiKey}`,
           "HTTP-Referer": "http://localhost:5173/", // Optional. Site URL for rankings on openrouter.ai.
           "X-Title": "<YOUR_SITE_NAME>", // Optional. Site title for rankings on openrouter.ai.
           "Content-Type": "application/json"
