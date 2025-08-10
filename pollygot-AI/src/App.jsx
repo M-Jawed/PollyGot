@@ -10,6 +10,8 @@ function App() {
     content: null,
     language: null,
   })
+  const [aiOutput, setAiOutput] = useState()
+  const [loading, setLoading] = useState(false)
 
   function handleTextareValue(e){
     setUserData(prev => {
@@ -29,6 +31,7 @@ function App() {
     console.log(userData)
 
       try {
+          setLoading(prev => !prev)
           const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
         method: "POST",
         headers: {
@@ -52,9 +55,11 @@ function App() {
         })
       });
     const data = await res.json()
-    console.log(data.choices[0].message.content)
+    setAiOutput(prev => data.choices[0].message.content)
       } catch(err){
           console.log('Failed with the status code of ', err.status)
+      } finally {
+        setLoading(prev => !prev)
       }
     }
 
@@ -69,7 +74,7 @@ function App() {
       </header>
 
       <main className='flex items-center justify-center mt-[10px] w-full h-[900px]'>
-        <div className='flex flex-col items-center border-[4px] border-[#252F42] rounded-[15px] w-[365px] h-[505px] mt-[-300px] py-5 px-5'>   
+        <div className='flex flex-col items-center border-[4px] border-[#252F42] rounded-[15px] w-[365px] h-[755px] py-5 px-5'>   
             <form onSubmit={handleSubmit} className='w-full mt-5 flex flex-col self-start text-start px-5'>
               <h1 className='text-[#035A9D] text-[1.25rem] font-bold'>Text to translate👇</h1>
               <textarea
@@ -80,7 +85,16 @@ function App() {
                 placeholder='How are you?' 
                 onChange={handleTextareValue}
               ></textarea>
-            <h1 className='text-[#035A9D] font-bold text-[1.25rem] mt-5'>Select languages👇</h1>
+              <h1 className='text-[#035A9D] text-[1.25rem] font-bold mt-5'>Output👇</h1>
+              <textarea 
+              className='w-[100%] h-[200px] bg-[#EFF0F4] px-3 py-3 mt-5 rounded-[8px] resize-none'
+              name="text" 
+              id="text"
+              placeholder='Translated text will appear here'
+              readOnly
+              value={aiOutput}
+              ></textarea>
+            <h1 className='text-[#035A9D] font-bold text-[1.25rem] mt-5 mb-5'>Select languages👇</h1>
               <label className='font-bold'>
                 <input className='mr-2 ' type="radio" name='languages' value='french' onClick={handleLanguageInput}/>
                 French
@@ -97,7 +111,7 @@ function App() {
                 Japanese
               </label>
 
-              <button type='submit' className='bg-[#035A9D] w-[100%] py-2 text-white font-bold text-2xl mt-15 flex items-center justify-center rounded-[6px] cursor-pointer'>Translate</button>
+              <button type='submit' className='bg-[#035A9D] w-[100%] py-2 text-white font-bold text-2xl mt-15 flex items-center justify-center rounded-[6px] cursor-pointer'> {loading ? 'Translating...' : 'Translate'} </button>
             </form> 
         </div>
       </main>
